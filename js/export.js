@@ -1,34 +1,13 @@
-// Export functionality
+// Export functionality - без запроса токена
 class ExportManager {
     constructor() {
         this.appData = null;
-        this.botToken = null;
-        // API эндпоинт Vercel
-        this.apiEndpoint = '/api/send-to-telegram';
     }
 
     setData(data) {
         this.appData = data;
     }
 
-    setBotToken(token) {
-        this.botToken = token;
-        localStorage.setItem('exam_bot_token', token);
-    }
-
-    getBotToken() {
-        if (this.botToken) return this.botToken;
-        
-        const saved = localStorage.getItem('exam_bot_token');
-        if (saved) {
-            this.botToken = saved;
-            return saved;
-        }
-        
-        return null;
-    }
-
-    // Generate standalone HTML file content
     generateHTML() {
         if (!this.appData || !this.appData.topics) {
             throw new Error('No data to export');
@@ -141,13 +120,12 @@ class ExportManager {
             const container = document.getElementById('questionsContainer');
             if (!container) return;
             if (!topic || !topic.questions || topic.questions.length === 0) {
-                container.innerHTML = '<div class="empty-state">Нет вопросов в этой теме</div>';
+                container.innerHTML = '<div class="empty-state">Нет вопросов</div>';
                 return;
             }
             container.innerHTML = topic.questions.map((q, i) => {
-                return '<div class="question-card">' +
-                    '<div class="question-text">' + (i + 1) + '. ' + escapeHtml(q.question) + '</div>' +
-                    '<div class="answer-container" id="answer-' + q.id + '">' +
+                return '<div class="question-card"><div class="question-text">' + (i + 1) + '. ' + 
+                    escapeHtml(q.question) + '</div><div class="answer-container" id="answer-' + q.id + '">' +
                     '<div class="answer-text">' + escapeHtml(q.answer) + '</div></div>' +
                     '<button class="btn" onclick="toggleAnswer(\\'' + q.id + '\\')">👁️ Показать ответ</button></div>';
             }).join('');
@@ -189,36 +167,28 @@ class ExportManager {
 </html>`;
     }
 
-    // Автоматическая отправка через бота
+    // Автоматическая отправка через бота (без токена!)
     async sendToTelegramAutomatically() {
-        const botToken = this.getBotToken();
-        
-        if (!botToken) {
-            await this.promptBotToken();
-            return false;
-        }
-
         const userId = telegram.getUserId();
         
         if (!userId) {
-            telegram.showAlert('❌ Не удалось получить ID пользователя. Убедитесь, что вы открыли приложение через Telegram.');
+            ui.showNotification('❌ Откройте приложение через Telegram');
             return false;
         }
 
         const htmlContent = this.generateHTML();
         const filename = `exam-trainer-${new Date().toISOString().slice(0, 10)}.html`;
 
-        // Показываем уведомление о начале отправки
-        ui.showNotification('📤 Отправка файла через бота...');
+        ui.showNotification('📤 Бот отправляет файл...');
 
         try {
-            const response = await fetch(this.apiEndpoint, {
+            // Отправляем только userId и контент, токен на сервере!
+            const response = await fetch('/api/send-to-telegram', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    botToken: botToken,
                     userId: userId,
                     content: htmlContent,
                     filename: filename
@@ -228,8 +198,8 @@ class ExportManager {
             const result = await response.json();
 
             if (result.success) {
-                telegram.showAlert('✅ Файл успешно отправлен!\n\nПроверьте чат с ботом - файл уже там! 🎉');
-                ui.showNotification('✅ Файл отправлен в чат с ботом!');
+                telegram.showAlert('✅ Готово!\n\nФайл уже в чате с ботом 📚');
+                ui.showNotification('✅ Файл отправлен!');
                 return true;
             } else {
                 throw new Error(result.error || 'Ошибка отправки');
@@ -237,13 +207,11 @@ class ExportManager {
         } catch (error) {
             console.error('Send error:', error);
             
-            // Предлагаем альтернативу
+            // Если не удалось - предлагаем скачать
             telegram.showConfirm(
-                '❌ Не удалось отправить файл автоматически.\n\nСкачать файл вручную?',
+                '❌ Не удалось отправить автоматически.\n\nСкачать файл?',
                 (confirmed) => {
-                    if (confirmed) {
-                        this.downloadHTML();
-                    }
+                    if (confirmed) this.downloadHTML();
                 }
             );
             
@@ -267,73 +235,13 @@ class ExportManager {
             
             URL.revokeObjectURL(url);
             
-            ui.showNotification('✅ Файл скачан! Отправьте его в чат вручную.');
+            ui.showNotification('✅ Файл скачан!');
             return true;
         } catch (error) {
             console.error('Download error:', error);
             return false;
         }
     }
-
-    // Запрос токена бота
-    async promptBotToken() {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('exportModal');
-            if (!modal) {
-                resolve(false);
-                return;
-            }
-
-            modal.innerHTML = `
-                <div class="export-modal-content">
-                    <h3>🤖 Настройка бота</h3>
-                    <p style="margin-bottom: 12px; font-size: 0.9rem; color: var(--tg-theme-hint-color, #666);">
-                        Для автоматической отправки файлов введите токен бота от 
-                        <a href="https://t.me/BotFather" target="_blank" style="color: #007aff;">@BotFather</a>
-                    </p>
-                    <input type="text" id="botTokenInput" 
-                           placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
-                           style="width: 100%; padding: 12px; border-radius: 12px; 
-                                  border: 2px solid rgba(0,0,0,0.1); margin-bottom: 12px;
-                                  font-size: 0.9rem; background: var(--tg-theme-secondary-bg-color, #f8f9fa);
-                                  color: var(--tg-theme-text-color, #333);">
-                    <p style="font-size: 0.8rem; color: var(--tg-theme-hint-color, #999); margin-bottom: 12px;">
-                        🔒 Токен сохраняется только в вашем браузере
-                    </p>
-                    <button class="btn btn-primary" id="saveTokenBtn" style="width: 100%;">
-                        💾 Сохранить и отправить
-                    </button>
-                    <button class="btn btn-secondary" id="downloadInsteadBtn" 
-                            style="width: 100%; margin-top: 8px;">
-                        📥 Скачать файл вручную
-                    </button>
-                </div>
-            `;
-            modal.style.display = 'flex';
-
-            const cleanup = () => {
-                modal.style.display = 'none';
-            };
-
-            document.getElementById('saveTokenBtn').addEventListener('click', () => {
-                const token = document.getElementById('botTokenInput').value.trim();
-                if (token) {
-                    this.setBotToken(token);
-                    cleanup();
-                    resolve(true);
-                } else {
-                    telegram.showAlert('Введите токен бота');
-                }
-            });
-
-            document.getElementById('downloadInsteadBtn').addEventListener('click', () => {
-                cleanup();
-                this.downloadHTML();
-                resolve(false);
-            });
-        });
-    }
 }
 
-// Create global instance
 const exportManager = new ExportManager();
