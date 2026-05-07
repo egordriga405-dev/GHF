@@ -1,4 +1,4 @@
-// Vercel Serverless Function для отправки файлов в Telegram
+// Vercel Serverless Function - токен бота на сервере
 export default async function handler(req, res) {
     // CORS заголовки
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -6,52 +6,51 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Обработка preflight запроса
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
 
-    // Только POST запросы
     if (req.method !== 'POST') {
-        return res.status(405).json({ 
-            success: false, 
-            error: 'Method not allowed' 
-        });
+        return res.status(405).json({ success: false, error: 'Method not allowed' });
     }
 
     try {
-        const { botToken, userId, content, filename } = req.body;
+        // Токен бота берется из переменных окружения Vercel
+        const BOT_TOKEN = process.env.BOT_TOKEN;
+        
+        if (!BOT_TOKEN) {
+            console.error('❌ BOT_TOKEN not set in environment variables');
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Bot token not configured on server' 
+            });
+        }
 
-        // Проверяем наличие всех необходимых данных
-        if (!botToken || !userId || !content) {
+        const { userId, content, filename } = req.body;
+
+        if (!userId || !content) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Missing required fields: botToken, userId, content' 
+                error: 'Missing required fields' 
             });
         }
 
         console.log(`📤 Sending file to user ${userId}...`);
 
-        // Создаем FormData для отправки файла
+        // Создаем FormData
         const FormData = require('form-data');
         const form = new FormData();
         
-        // Добавляем chat_id
         form.append('chat_id', userId);
-        
-        // Добавляем файл как buffer
-        const buffer = Buffer.from(content, 'utf-8');
-        form.append('document', buffer, {
+        form.append('document', Buffer.from(content, 'utf-8'), {
             filename: filename || 'exam-trainer.html',
             contentType: 'text/html',
         });
-        
-        // Добавляем подпись
-        form.append('caption', '📚 Ваш тренажёр для экзаменов готов!\n\nОткройте файл в любом браузере для начала тренировки.');
+        form.append('caption', '📚 Ваш тренажёр для экзаменов готов!\n\n✅ Откройте файл в браузере\n🎯 Все вопросы и ответы внутри');
 
-        // Отправляем запрос к Telegram API
+        // Отправка в Telegram
         const telegramResponse = await fetch(
-            `https://api.telegram.org/bot${botToken}/sendDocument`,
+            `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
             {
                 method: 'POST',
                 body: form,
@@ -78,7 +77,7 @@ export default async function handler(req, res) {
         console.error('❌ Server error:', error);
         return res.status(500).json({ 
             success: false, 
-            error: error.message || 'Internal server error'
+            error: 'Internal server error'
         });
     }
 }
