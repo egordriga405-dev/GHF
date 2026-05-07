@@ -1,0 +1,25 @@
+{
+    "topics": [
+        {
+            "id": "default_topic_1",
+            "name": "HTML/CSS основы",
+            "questions": [
+                {
+                    "id": "default_q_1",
+                    "question": "Что такое HTML?",
+                    "answer": "HyperText Markup Language - язык разметки для создания веб-страниц"
+                },
+                {
+                    "id": "default_q_2",
+                    "question": "Для чего нужен CSS?",
+                    "answer": "Cascading Style Sheets - для стилизации и оформления веб-страниц"
+                },
+                {
+                    "id": "default_q_3",
+                    "question": "Как подключить JavaScript к HTML?",
+                    "answer": "С помощью тега <script>. Можно разместить код внутри тега или подключить внешний файл через атрибут src"
+                }
+            ]
+        }
+    ]
+}
