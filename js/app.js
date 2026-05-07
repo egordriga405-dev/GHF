@@ -277,42 +277,45 @@ class ExamConstructorApp {
         this.render();
     }
 
-    exportApp() {
-        ui.showExportModal(
-            // Download handler
-            () => {
-                const success = exportManager.downloadHTML();
-                if (success) {
-                    ui.showNotification('✅ Файл скачан! Откройте его в браузере.');
-                } else {
-                    ui.showNotification('❌ Ошибка при скачивании');
-                }
-            },
-            // Copy handler
-            async () => {
-                const success = await exportManager.copyToClipboard();
-                if (success) {
-                    ui.showNotification('📋 HTML код скопирован! Сохраните как .html файл.');
-                } else {
-                    ui.showNotification('❌ Ошибка копирования');
-                }
-            },
-            // Share handler
-            async () => {
-                const success = await exportManager.shareFile();
-                if (!success) {
-                    telegram.showConfirm(
-                        'Не удалось поделиться файлом. Скачать вместо этого?',
-                        (confirmed) => {
-                            if (confirmed) {
-                                exportManager.downloadHTML();
-                            }
-                        }
-                    );
-                }
+    // В методе exportApp() замените на:
+exportApp() {
+    ui.showExportModal(
+        // Скачать файл (офлайн)
+        () => {
+            const success = exportManager.downloadHTML();
+            if (success) {
+                ui.showNotification('✅ Файл скачан! Откройте его в браузере.');
+            } else {
+                ui.showNotification('❌ Ошибка при скачивании');
             }
-        );
-    }
+        },
+        // Отправить через бота
+        async () => {
+            ui.showNotification('📤 Отправка через бота...');
+            const success = await exportManager.sendViaBot();
+            if (!success) {
+                // Fallback to download
+                telegram.showConfirm(
+                    'Не удалось отправить через бота. Скачать файл вместо этого?',
+                    (confirmed) => {
+                        if (confirmed) {
+                            exportManager.downloadHTML();
+                        }
+                    }
+                );
+            }
+        },
+        // Копировать код
+        async () => {
+            const success = await exportManager.copyToClipboard();
+            if (success) {
+                ui.showNotification('📋 HTML код скопирован! Сохраните как .html файл.');
+            } else {
+                ui.showNotification('❌ Ошибка копирования');
+            }
+        }
+    );
+}
 
     bindEvents() {
         // Mode switch
