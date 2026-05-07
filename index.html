@@ -9,6 +9,50 @@
     :root {
       --safe-area-inset-top: env(safe-area-inset-top);
       --safe-area-inset-bottom: env(safe-area-inset-bottom);
+      --app-bg: #f0f2f5;
+      --app-text: #1a1a1a;
+      --app-secondary-bg: #ffffff;
+      --app-button: #007aff;
+      --app-button-text: #ffffff;
+      --app-hint: #999999;
+      --app-card-bg: #ffffff;
+      --app-border: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Стандартная тема */
+    body.theme-standard {
+      --app-bg: #f0f2f5;
+      --app-text: #1a1a1a;
+      --app-secondary-bg: #e8e8ed;
+      --app-button: #007aff;
+      --app-button-text: #ffffff;
+      --app-hint: #999999;
+      --app-card-bg: #ffffff;
+      --app-border: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Тёмная тема */
+    body.theme-dark {
+      --app-bg: #1a1a2e;
+      --app-text: #e0e0e0;
+      --app-secondary-bg: #16213e;
+      --app-button: #0f3460;
+      --app-button-text: #ffffff;
+      --app-hint: #a0a0a0;
+      --app-card-bg: #16213e;
+      --app-border: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Светлая тема */
+    body.theme-light {
+      --app-bg: #ffffff;
+      --app-text: #1a1a1a;
+      --app-secondary-bg: #f5f5f5;
+      --app-button: #007aff;
+      --app-button-text: #ffffff;
+      --app-hint: #666666;
+      --app-card-bg: #f9f9f9;
+      --app-border: rgba(0, 0, 0, 0.1);
     }
 
     * {
@@ -19,8 +63,8 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: var(--tg-theme-bg-color, #f0f2f5);
-      color: var(--tg-theme-text-color, #1a1a1a);
+      background: var(--app-bg);
+      color: var(--app-text);
       padding: 16px;
       padding-top: calc(16px + var(--safe-area-inset-top));
       padding-bottom: calc(16px + var(--safe-area-inset-bottom));
@@ -30,20 +74,40 @@
       line-height: 1.5;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      transition: all 0.3s ease;
+    }
+
+    .settings-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .theme-selector {
+      background: var(--app-secondary-bg);
+      border: 1px solid var(--app-border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: var(--app-text);
+      cursor: pointer;
+      font-family: inherit;
+      outline: none;
     }
 
     .app-header {
-      background: var(--tg-theme-bg-color, #ffffff);
+      background: var(--app-card-bg);
       padding: 16px;
       border-radius: 20px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       margin-bottom: 16px;
+      border: 1px solid var(--app-border);
     }
 
     .app-title {
       font-size: 1.8rem;
       font-weight: 800;
-      background: linear-gradient(135deg, var(--tg-theme-button-color, #007aff), #0056b3);
+      background: linear-gradient(135deg, var(--app-button), #0056b3);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -54,7 +118,7 @@
     .mode-switch {
       display: flex;
       gap: 8px;
-      background: var(--tg-theme-secondary-bg-color, #e8e8ed);
+      background: var(--app-secondary-bg);
       border-radius: 16px;
       padding: 4px;
       margin: 0 auto;
@@ -70,13 +134,13 @@
       font-weight: 600;
       font-size: 0.9rem;
       cursor: pointer;
-      color: var(--tg-theme-text-color, #333);
+      color: var(--app-text);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .mode-btn.active {
-      background: var(--tg-theme-button-color, #007aff);
-      color: var(--tg-theme-button-text-color, #ffffff);
+      background: var(--app-button);
+      color: var(--app-button-text);
       box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
     }
 
@@ -95,15 +159,15 @@
     }
 
     .topic-chip {
-      background: var(--tg-theme-secondary-bg-color, #ffffff);
-      border: 2px solid transparent;
+      background: var(--app-card-bg);
+      border: 2px solid var(--app-border);
       padding: 10px 20px;
       border-radius: 25px;
       font-size: 0.9rem;
       font-weight: 600;
       white-space: nowrap;
       cursor: pointer;
-      color: var(--tg-theme-text-color, #333);
+      color: var(--app-text);
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -112,9 +176,9 @@
     }
 
     .topic-chip.active {
-      background: var(--tg-theme-button-color, #007aff);
-      color: var(--tg-theme-button-text-color, #ffffff);
-      border-color: var(--tg-theme-button-color, #007aff);
+      background: var(--app-button);
+      color: var(--app-button-text);
+      border-color: var(--app-button);
     }
 
     .topic-chip .delete-icon {
@@ -131,8 +195,8 @@
 
     .add-topic-chip {
       background: transparent;
-      border: 2px dashed var(--tg-theme-hint-color, #999);
-      color: var(--tg-theme-hint-color, #666);
+      border: 2px dashed var(--app-hint);
+      color: var(--app-hint);
       min-width: 44px;
       justify-content: center;
       font-size: 1.4rem;
@@ -148,12 +212,12 @@
     }
 
     .question-card {
-      background: var(--tg-theme-bg-color, #ffffff);
+      background: var(--app-card-bg);
       border-radius: 16px;
       padding: 16px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       transition: all 0.3s ease;
-      border: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.1));
+      border: 1px solid var(--app-border);
       animation: slideIn 0.3s ease-out;
     }
 
@@ -199,7 +263,7 @@
     }
 
     .answer-container {
-      background: var(--tg-theme-secondary-bg-color, #f8f9fa);
+      background: var(--app-secondary-bg);
       border-radius: 12px;
       padding: 0;
       max-height: 0;
@@ -245,13 +309,14 @@
     }
 
     .btn-primary {
-      background: var(--tg-theme-button-color, #007aff);
-      color: var(--tg-theme-button-text-color, #ffffff);
+      background: var(--app-button);
+      color: var(--app-button-text);
     }
 
     .btn-secondary {
-      background: var(--tg-theme-secondary-bg-color, #e8e8ed);
-      color: var(--tg-theme-text-color, #333);
+      background: var(--app-secondary-bg);
+      color: var(--app-text);
+      border: 1px solid var(--app-border);
     }
 
     .btn-danger {
@@ -273,17 +338,18 @@
     }
 
     .form-container {
-      background: var(--tg-theme-bg-color, #ffffff);
+      background: var(--app-card-bg);
       border-radius: 20px;
       padding: 20px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--app-border);
     }
 
     .form-title {
       font-weight: 700;
       font-size: 1.2rem;
       margin-bottom: 16px;
-      color: var(--tg-theme-text-color, #333);
+      color: var(--app-text);
     }
 
     .input-group {
@@ -295,16 +361,16 @@
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 6px;
-      color: var(--tg-theme-hint-color, #666);
+      color: var(--app-hint);
     }
 
     input, textarea {
       width: 100%;
       padding: 12px 16px;
       border-radius: 12px;
-      border: 2px solid var(--tg-theme-hint-color, #ddd);
-      background: var(--tg-theme-secondary-bg-color, #f8f9fa);
-      color: var(--tg-theme-text-color, #333);
+      border: 2px solid var(--app-border);
+      background: var(--app-secondary-bg);
+      color: var(--app-text);
       font-size: 0.95rem;
       font-family: inherit;
       transition: border-color 0.2s;
@@ -312,7 +378,7 @@
 
     input:focus, textarea:focus {
       outline: none;
-      border-color: var(--tg-theme-button-color, #007aff);
+      border-color: var(--app-button);
     }
 
     textarea {
@@ -333,7 +399,7 @@
     .empty-state {
       text-align: center;
       padding: 48px 20px;
-      color: var(--tg-theme-hint-color, #999);
+      color: var(--app-hint);
     }
 
     .empty-state-icon {
@@ -386,7 +452,16 @@
     }
   </style>
 </head>
-<body>
+<body class="theme-telegram">
+  <div class="settings-bar">
+    <select class="theme-selector" id="themeSelector">
+      <option value="telegram">🎨 Тема Telegram</option>
+      <option value="standard">☀️ Стандартная</option>
+      <option value="light">🌞 Светлая</option>
+      <option value="dark">🌙 Тёмная</option>
+    </select>
+  </div>
+
   <div class="app-header">
     <h1 class="app-title">📚 Конструктор экзаменов</h1>
     <div class="mode-switch" id="modeSwitch">
@@ -412,7 +487,7 @@
       🎲 Случайный вопрос
     </button>
     <button class="btn btn-primary" id="exportBtn">
-      📤 Экспорт
+      📤 Экспорт HTML
     </button>
   </div>
 
@@ -447,24 +522,68 @@
       // ============ Telegram WebApp Initialization ============
       const tg = window.Telegram?.WebApp;
       
+      // Theme management
+      let currentTheme = 'telegram'; // 'telegram', 'standard', 'light', 'dark'
+      
+      const applyTelegramTheme = () => {
+        if (tg && currentTheme === 'telegram') {
+          document.body.style.setProperty('--app-bg', tg.backgroundColor || '#f0f2f5');
+          document.body.style.setProperty('--app-text', tg.textColor || '#1a1a1a');
+          document.body.style.setProperty('--app-secondary-bg', tg.secondaryBackgroundColor || '#e8e8ed');
+          document.body.style.setProperty('--app-button', tg.buttonColor || '#007aff');
+          document.body.style.setProperty('--app-button-text', tg.buttonTextColor || '#ffffff');
+          document.body.style.setProperty('--app-hint', tg.hintColor || '#999999');
+          document.body.style.setProperty('--app-card-bg', tg.backgroundColor || '#ffffff');
+          document.body.style.setProperty('--app-border', 'rgba(0, 0, 0, 0.1)');
+        }
+      };
+
+      const applyTheme = (theme) => {
+        currentTheme = theme;
+        
+        // Remove all theme classes
+        document.body.classList.remove('theme-telegram', 'theme-standard', 'theme-light', 'theme-dark');
+        
+        if (theme === 'telegram') {
+          document.body.classList.add('theme-telegram');
+          applyTelegramTheme();
+        } else if (theme === 'standard') {
+          document.body.classList.add('theme-standard');
+        } else if (theme === 'light') {
+          document.body.classList.add('theme-light');
+        } else if (theme === 'dark') {
+          document.body.classList.add('theme-dark');
+        }
+        
+        localStorage.setItem('exam_constructor_theme', theme);
+      };
+      
       if (tg) {
         tg.ready();
         tg.expand();
         tg.enableClosingConfirmation();
         
-        // Apply Telegram theme colors
-        const setThemeColors = () => {
-          document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor || '#f0f2f5');
-          document.documentElement.style.setProperty('--tg-theme-text-color', tg.textColor || '#1a1a1a');
-          document.documentElement.style.setProperty('--tg-theme-hint-color', tg.hintColor || '#999999');
-          document.documentElement.style.setProperty('--tg-theme-button-color', tg.buttonColor || '#007aff');
-          document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.buttonTextColor || '#ffffff');
-          document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.secondaryBackgroundColor || '#e8e8ed');
-        };
+        // Listen for theme changes
+        tg.onEvent('themeChanged', () => {
+          if (currentTheme === 'telegram') {
+            applyTelegramTheme();
+          }
+        });
         
-        setThemeColors();
-        tg.onEvent('themeChanged', setThemeColors);
+        // Apply initial Telegram theme
+        applyTelegramTheme();
       }
+
+      // Load saved theme
+      const savedTheme = localStorage.getItem('exam_constructor_theme') || 'telegram';
+      applyTheme(savedTheme);
+      document.getElementById('themeSelector').value = savedTheme;
+
+      // Theme selector event
+      document.getElementById('themeSelector').addEventListener('change', (e) => {
+        applyTheme(e.target.value);
+        showNotification('Тема изменена ✓');
+      });
 
       // ============ Data Management ============
       const STORAGE_KEY = 'exam_constructor_data_v2';
@@ -487,7 +606,6 @@
             appData.topics = parsed.topics || [];
             appData.currentTopicId = parsed.currentTopicId || null;
             
-            // Create default topic if empty
             if (appData.topics.length === 0) {
               createDefaultData();
             }
@@ -514,11 +632,6 @@
               id: generateId(),
               question: 'Для чего используется CSS?',
               answer: 'Cascading Style Sheets — каскадные таблицы стилей, используются для оформления внешнего вида веб-страниц'
-            },
-            {
-              id: generateId(),
-              question: 'Как подключить JavaScript к HTML?',
-              answer: 'С помощью тега <script>. Можно разместить код внутри тега или подключить внешний файл через атрибут src'
             }
           ]
         }];
@@ -568,7 +681,6 @@
           container.appendChild(chip);
         });
         
-        // Add new topic button
         const addChip = document.createElement('div');
         addChip.className = 'topic-chip add-topic-chip';
         addChip.textContent = '+';
@@ -704,7 +816,6 @@
         
         let targetTopic = getCurrentTopic();
         
-        // If topic name provided, find or create topic
         if (topicName) {
           let existingTopic = appData.topics.find(t => 
             t.name.toLowerCase() === topicName.toLowerCase()
@@ -731,14 +842,12 @@
           return;
         }
         
-        // Add question
         targetTopic.questions.push({
           id: generateId(),
           question: questionText,
           answer: answerText
         });
         
-        // Clear inputs
         questionInput.value = '';
         answerInput.value = '';
         
@@ -810,16 +919,13 @@
         
         const random = allQuestions[Math.floor(Math.random() * allQuestions.length)];
         
-        // Switch to the topic of random question
         if (random.topicId) {
           appData.currentTopicId = random.topicId;
           renderAll();
           
-          // Show answer with delay
           setTimeout(() => {
             toggleAnswer(random.id);
             
-            // Scroll to the question
             const questionCard = document.querySelector(`[data-question-id="${random.id}"]`);
             if (questionCard) {
               questionCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -830,225 +936,333 @@
         showNotification(`Случайный вопрос из темы "${random.topicName}"`);
       };
 
+      // ============ FIXED: Export Function ============
       const exportHTML = () => {
-        const dataExport = JSON.stringify(appData.topics, null, 2);
-        
-        const htmlContent = `<!DOCTYPE html>
+        // Create the complete standalone HTML file
+        const standaloneHTML = `<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Тренажёр для подготовки к экзаменам</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-      background: #f0f2f5; 
-      padding: 16px; 
-      max-width: 600px; 
-      margin: 0 auto; 
-      color: #1a1a1a;
-      line-height: 1.5;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .header { 
-      background: white; 
-      padding: 20px; 
-      border-radius: 16px; 
-      margin-bottom: 16px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    :root {
+      --bg-color: #f0f2f5;
+      --text-color: #1a1a1a;
+      --card-bg: #ffffff;
+      --secondary-bg: #e8e8ed;
+      --button-color: #007aff;
+      --button-text: #ffffff;
+      --border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       text-align: center;
     }
-    .title { 
-      font-size: 1.8rem; 
-      font-weight: 800; 
-      color: #007aff; 
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #007aff, #0056b3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 12px;
     }
-    .topics-scroll { 
-      display: flex; 
-      gap: 8px; 
-      overflow-x: auto; 
-      padding: 8px 0; 
-      margin-bottom: 16px; 
-      -webkit-overflow-scrolling: touch; 
+
+    .topics-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 0;
+      margin-bottom: 16px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
-    .topic-chip { 
-      background: white; 
-      padding: 10px 20px; 
-      border-radius: 25px; 
-      font-weight: 600; 
-      white-space: nowrap; 
-      cursor: pointer; 
+
+    .topics-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .topic-chip {
+      background: var(--card-bg);
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 2px solid var(--border-color);
       transition: all 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-    .topic-chip.active { 
-      background: #007aff; 
-      color: white; 
+
+    .topic-chip.active {
+      background: var(--button-color);
+      color: var(--button-text);
+      border-color: var(--button-color);
     }
-    .question-card { 
-      background: white; 
-      border-radius: 16px; 
-      padding: 16px; 
-      margin-bottom: 12px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+    .question-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border-color);
     }
-    .question-text { 
-      font-weight: 600; 
-      font-size: 1.05rem; 
+
+    .question-text {
+      font-weight: 600;
+      font-size: 1.05rem;
       margin-bottom: 8px;
     }
-    .answer-container { 
-      background: #f8f9fa; 
-      border-radius: 12px; 
-      padding: 0; 
-      max-height: 0; 
-      overflow: hidden; 
-      transition: all 0.3s; 
+
+    .answer-container {
+      background: var(--secondary-bg);
+      border-radius: 12px;
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
       opacity: 0;
     }
-    .answer-container.expanded { 
-      padding: 12px; 
-      max-height: 500px; 
-      opacity: 1; 
+
+    .answer-container.expanded {
+      padding: 12px;
+      max-height: 500px;
+      opacity: 1;
       margin-top: 12px;
     }
-    .btn { 
-      padding: 8px 16px; 
-      border: none; 
-      border-radius: 10px; 
-      font-weight: 600; 
-      cursor: pointer; 
-      background: #e8e8ed; 
-      color: #333;
-      transition: all 0.2s;
+
+    .answer-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
     }
-    .btn:active { transform: scale(0.96); }
-    .toolbar { 
-      display: flex; 
-      gap: 8px; 
-      margin-bottom: 16px; 
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--secondary-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
     }
-    .toolbar .btn { 
-      flex: 1; 
-      min-width: calc(50% - 4px); 
+
+    .toolbar .btn {
+      flex: 1;
+      min-width: calc(50% - 4px);
       text-align: center;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <div class="title">📚 Тренажёр для экзаменов</div>
+    <p style="color: #666; font-size: 0.9rem;">Создано с помощью Exam Constructor</p>
   </div>
-  
+
   <div class="topics-scroll" id="topicsContainer"></div>
   <div id="questionsContainer"></div>
-  
+
   <div class="toolbar">
-    <button class="btn" onclick="hideAllAnswers()">🙈 Скрыть ответы</button>
-    <button class="btn" onclick="showRandomQuestion()">🎲 Случайный вопрос</button>
+    <button class="btn" onclick="hideAllAnswers()">🙈 Скрыть все ответы</button>
+    <button class="btn" onclick="randomQuestion()">🎲 Случайный вопрос</button>
   </div>
 
   <script>
-    const examData = ${dataExport};
+    // Exam data
+    const examData = ${JSON.stringify(appData.topics, null, 2)};
     let currentTopicId = examData.length > 0 ? examData[0].id : null;
-    
+
     function renderTopics() {
       const container = document.getElementById('topicsContainer');
-      container.innerHTML = examData.map(topic => 
-        \`<div class="topic-chip \${topic.id === currentTopicId ? 'active' : ''}" 
-             onclick="switchTopic('\${topic.id}')">\${topic.name}</div>\`
-      ).join('');
+      if (!container) return;
+      
+      container.innerHTML = examData.map(function(topic) {
+        return '<div class="topic-chip' + (topic.id === currentTopicId ? ' active' : '') + '" onclick="switchTopic(\\'' + topic.id + '\\')">' + 
+               topic.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+      }).join('');
     }
-    
+
     function switchTopic(id) {
       currentTopicId = id;
       renderAll();
     }
-    
+
     function renderQuestions() {
-      const topic = examData.find(t => t.id === currentTopicId);
+      const topic = examData.find(function(t) { return t.id === currentTopicId; });
       const container = document.getElementById('questionsContainer');
-      
-      if (!topic || !topic.questions.length) {
-        container.innerHTML = '<p style="text-align:center;padding:40px;">Нет вопросов</p>';
+      if (!container) return;
+
+      if (!topic || !topic.questions || topic.questions.length === 0) {
+        container.innerHTML = '<div class="empty-state">Нет вопросов в этой теме</div>';
         return;
       }
-      
-      container.innerHTML = topic.questions.map((q, i) => \`
-        <div class="question-card">
-          <div class="question-text">\${i + 1}. \${q.question}</div>
-          <div class="answer-container" id="answer-\${q.id}">
-            \${q.answer}
-          </div>
-          <button class="btn" onclick="toggleAnswer('\${q.id}')" style="margin-top:8px;">
-            👁️ Показать ответ
-          </button>
-        </div>
-      \`).join('');
+
+      container.innerHTML = topic.questions.map(function(q, i) {
+        return '<div class="question-card">' +
+          '<div class="question-text">' + (i + 1) + '. ' + 
+          q.question.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' +
+          '<div class="answer-container" id="answer-' + q.id + '">' +
+          '<div class="answer-text">' + 
+          q.answer.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' +
+          '</div>' +
+          '<button class="btn" onclick="toggleAnswer(\\'' + q.id + '\\')">👁️ Показать ответ</button>' +
+          '</div>';
+      }).join('');
     }
-    
+
     function toggleAnswer(id) {
       const container = document.getElementById('answer-' + id);
-      const btn = container.nextElementSibling;
+      if (!container) return;
+      
+      const btn = container.parentElement.querySelector('.btn');
       
       if (container.classList.contains('expanded')) {
         container.classList.remove('expanded');
-        btn.textContent = '👁️ Показать ответ';
+        if (btn) btn.textContent = '👁️ Показать ответ';
       } else {
         container.classList.add('expanded');
-        btn.textContent = '🙈 Скрыть ответ';
+        if (btn) btn.textContent = '🙈 Скрыть ответ';
       }
     }
-    
+
     function hideAllAnswers() {
-      document.querySelectorAll('.answer-container').forEach(c => c.classList.remove('expanded'));
-      document.querySelectorAll('.btn').forEach(b => {
-        if (b.textContent.includes('Скрыть')) b.textContent = '👁️ Показать ответ';
-      });
+      const containers = document.querySelectorAll('.answer-container');
+      const buttons = document.querySelectorAll('.question-card .btn');
+      
+      containers.forEach(function(c) { c.classList.remove('expanded'); });
+      buttons.forEach(function(b) { b.textContent = '👁️ Показать ответ'; });
     }
-    
-    function showRandomQuestion() {
+
+    function randomQuestion() {
       const allQuestions = [];
-      examData.forEach(t => {
-        t.questions.forEach(q => allQuestions.push({...q, topicId: t.id}));
+      
+      examData.forEach(function(topic) {
+        topic.questions.forEach(function(question) {
+          allQuestions.push({
+            id: question.id,
+            question: question.question,
+            answer: question.answer,
+            topicId: topic.id,
+            topicName: topic.name
+          });
+        });
       });
-      
-      if (!allQuestions.length) return;
-      
+
+      if (allQuestions.length === 0) return;
+
       const random = allQuestions[Math.floor(Math.random() * allQuestions.length)];
+      
+      // Switch to topic
       switchTopic(random.topicId);
       
-      setTimeout(() => {
+      // Show answer after render
+      setTimeout(function() {
         toggleAnswer(random.id);
-        const card = document.querySelector(\`[id="answer-\${random.id}"]\`).closest('.question-card');
-        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        const answerContainer = document.getElementById('answer-' + random.id);
+        if (answerContainer) {
+          answerContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }, 300);
     }
-    
+
     function renderAll() {
       renderTopics();
       renderQuestions();
     }
-    
+
+    // Initialize
     renderAll();
-  <\/script>
+  </script>
 </body>
 </html>`;
+
+        // Create blob and trigger download
+        const blob = new Blob([standaloneHTML], { 
+          type: 'text/html;charset=utf-8' 
+        });
         
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
         const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = `exam-trainer-${new Date().toISOString().slice(0, 10)}.html`;
         
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `exam-trainer-${new Date().toISOString().slice(0, 10)}.html`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        // Append to body, click, and remove
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
         
-        showNotification('Файл экспортирован ✓');
+        // Cleanup
+        setTimeout(() => {
+          document.body.removeChild(downloadLink);
+          URL.revokeObjectURL(url);
+        }, 100);
+        
+        showNotification('✅ Файл успешно экспортирован!');
+        
+        // Try to share via Telegram if available
+        if (tg && tg.openLink) {
+          setTimeout(() => {
+            tg.showPopup({
+              title: 'Экспорт выполнен',
+              message: 'HTML-файл сохранён. Хотите поделиться им?',
+              buttons: [
+                { type: 'cancel', text: 'Нет' },
+                { type: 'ok', text: 'Поделиться' }
+              ]
+            }, (result) => {
+              if (result === 'ok') {
+                // You can implement sharing logic here
+                tg.showAlert('Используйте кнопку "Поделиться" в вашем браузере');
+              }
+            });
+          }, 500);
+        }
       };
 
       // ============ UI Helpers ============
@@ -1082,7 +1296,8 @@
         notification.textContent = message;
         notification.style.display = 'block';
         
-        setTimeout(() => {
+        clearTimeout(notification._timeout);
+        notification._timeout = setTimeout(() => {
           notification.style.display = 'none';
         }, 2000);
       };
@@ -1107,9 +1322,12 @@
 
       // Keyboard shortcuts
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
           addQuestion();
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+          e.preventDefault();
+          exportHTML();
         }
       });
 
@@ -1123,9 +1341,11 @@
       switchMode('edit');
       renderAll();
 
-      console.log('📚 Exam Constructor initialized successfully!');
+      console.log('📚 Exam Constructor v2.0 initialized');
+      console.log('🎨 Theme:', currentTheme);
       console.log('📊 Topics:', appData.topics.length);
       console.log('❓ Total questions:', appData.topics.reduce((sum, t) => sum + t.questions.length, 0));
+      console.log('💡 Press Ctrl+E to export, Ctrl+Enter to add question');
     })();
   </script>
 </body>
