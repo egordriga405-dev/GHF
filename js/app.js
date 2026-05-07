@@ -278,43 +278,36 @@ class ExamConstructorApp {
     }
 
     // В методе exportApp() замените на:
+// В методе exportApp() используйте:
 exportApp() {
-    ui.showExportModal(
-        // Скачать файл (офлайн)
-        () => {
-            const success = exportManager.downloadHTML();
-            if (success) {
-                ui.showNotification('✅ Файл скачан! Откройте его в браузере.');
-            } else {
-                ui.showNotification('❌ Ошибка при скачивании');
+    const botToken = exportManager.getBotToken();
+    
+    if (botToken) {
+        // Если токен уже есть - сразу отправляем
+        exportManager.sendToTelegramAutomatically();
+    } else {
+        // Если токена нет - показываем диалог
+        ui.showExportModal(
+            // Автоматическая отправка через бота
+            async () => {
+                await exportManager.promptBotToken();
+            },
+            // Ручное скачивание
+            () => {
+                exportManager.downloadHTML();
+            },
+            // Копирование в буфер
+            async () => {
+                const htmlContent = exportManager.generateHTML();
+                try {
+                    await navigator.clipboard.writeText(htmlContent);
+                    ui.showNotification('📋 HTML код скопирован! Сохраните как .html файл.');
+                } catch (error) {
+                    ui.showNotification('❌ Ошибка копирования');
+                }
             }
-        },
-        // Отправить через бота
-        async () => {
-            ui.showNotification('📤 Отправка через бота...');
-            const success = await exportManager.sendViaBot();
-            if (!success) {
-                // Fallback to download
-                telegram.showConfirm(
-                    'Не удалось отправить через бота. Скачать файл вместо этого?',
-                    (confirmed) => {
-                        if (confirmed) {
-                            exportManager.downloadHTML();
-                        }
-                    }
-                );
-            }
-        },
-        // Копировать код
-        async () => {
-            const success = await exportManager.copyToClipboard();
-            if (success) {
-                ui.showNotification('📋 HTML код скопирован! Сохраните как .html файл.');
-            } else {
-                ui.showNotification('❌ Ошибка копирования');
-            }
-        }
-    );
+        );
+    }
 }
 
     bindEvents() {
