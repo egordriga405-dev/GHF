@@ -1,0 +1,17 @@
+{
+  "name": "exam-constructor",
+  "version": "1.0.0",
+  "description": "Telegram Mini App for creating exam trainers",
+  "main": "index.html",
+  "scripts": {
+    "start": "node bot/bot.js",
+    "dev": "nodemon bot/bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
