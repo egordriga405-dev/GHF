@@ -2,10 +2,15 @@
 class ExportManager {
     constructor() {
         this.appData = null;
+        this.botToken = null;
     }
 
     setData(data) {
         this.appData = data;
+    }
+
+    setBotToken(token) {
+        this.botToken = token;
     }
 
     // Generate standalone HTML file content
@@ -266,22 +271,107 @@ class ExportManager {
     downloadHTML() {
         try {
             const htmlContent = this.generateHTML();
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `exam-trainer-${new Date().toISOString().slice(0, 10)}.html`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            URL.revokeObjectURL(url);
+            telegram.downloadFile(htmlContent, `exam-trainer-${new Date().toISOString().slice(0, 10)}.html`);
             return true;
         } catch (error) {
             console.error('Download error:', error);
             return false;
         }
+    }
+
+    // Отправка файла через бота (требуется бэкенд)
+    async sendViaBot() {
+        if (!this.botToken) {
+            // Запрашиваем токен бота
+            telegram.showPopup(
+                '🤖 Токен бота',
+                'Для отправки файла через бота, введите токен вашего бота (можно получить у @BotFather):',
+                [
+                    { type: 'cancel', text: 'Отмена' },
+                    { type: 'ok', text: 'Ввести' }
+                ],
+                (buttonId) => {
+                    if (buttonId === 'ok') {
+                        this.promptBotToken();
+                    }
+                }
+            );
+            return false;
+        }
+
+        const userId = telegram.getUserId();
+        if (!userId) {
+            telegram.showAlert('Не удалось получить ID пользователя');
+            return false;
+        }
+
+        try {
+            const htmlContent = this.generateHTML();
+            const filename = `exam-trainer-${new Date().toISOString().slice(0, 10)}.html`;
+
+            // Отправляем запрос на сервер
+            const response = await fetch('/api/send-file.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    botToken: this.botToken,
+                    userId: userId,
+                    content: htmlContent,
+                    filename: filename
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                telegram.showAlert('✅ Файл отправлен в чат с ботом!');
+                return true;
+            } else {
+                telegram.showAlert('❌ Ошибка отправки: ' + (result.error || 'неизвестная ошибка'));
+                return false;
+            }
+        } catch (error) {
+            console.error('Send via bot error:', error);
+            telegram.showAlert('❌ Ошибка соединения с сервером');
+            return false;
+        }
+    }
+
+    promptBotToken() {
+        // Создаем модальное окно для ввода токена
+        const modal = document.getElementById('exportModal');
+        modal.innerHTML = `
+            <div class="export-modal-content">
+                <h3>🤖 Введите токен бота</h3>
+                <p style="margin-bottom: 12px; font-size: 0.9rem; color: var(--tg-theme-hint-color, #666);">
+                    Получите токен у <a href="https://t.me/BotFather" target="_blank">@BotFather</a>
+                </p>
+                <input type="text" id="botTokenInput" placeholder="123456:ABC-DEF1234ghikl-mnopqr" 
+                       style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); 
+                              margin-bottom: 12px; font-size: 0.9rem;">
+                <button class="btn btn-primary" id="saveTokenBtn" style="width: 100%;">💾 Сохранить и отправить</button>
+                <button class="btn btn-secondary" id="cancelTokenBtn" style="width: 100%; margin-top: 8px;">❌ Отмена</button>
+            </div>
+        `;
+        modal.style.display = 'flex';
+
+        document.getElementById('saveTokenBtn').addEventListener('click', () => {
+            const token = document.getElementById('botTokenInput').value.trim();
+            if (token) {
+                this.botToken = token;
+                localStorage.setItem('exam_bot_token', token);
+                modal.style.display = 'none';
+                this.sendViaBot();
+            } else {
+                telegram.showAlert('Введите токен бота');
+            }
+        });
+
+        document.getElementById('cancelTokenBtn').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
     }
 
     // Copy to clipboard
