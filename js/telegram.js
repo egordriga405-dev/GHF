@@ -3,6 +3,7 @@ class TelegramIntegration {
     constructor() {
         this.tg = window.Telegram?.WebApp;
         this.initialized = false;
+        this.botToken = null; // Будет запрашиваться у пользователя
     }
 
     init() {
@@ -24,8 +25,13 @@ class TelegramIntegration {
                 this.applyTelegramTheme();
             });
 
+            // Получаем initData для отправки на сервер
+            this.initData = this.tg.initData || '';
+            this.initDataUnsafe = this.tg.initDataUnsafe || {};
+
             this.initialized = true;
             console.log('✅ Telegram WebApp initialized');
+            console.log('User ID:', this.getUserId());
             return true;
         } catch (error) {
             console.error('Telegram initialization error:', error);
@@ -62,8 +68,24 @@ class TelegramIntegration {
         }
     }
 
+    showPopup(title, message, buttons, callback) {
+        if (this.tg) {
+            this.tg.showPopup({
+                title: title,
+                message: message,
+                buttons: buttons
+            }, callback);
+        }
+    }
+
     getUserId() {
         return this.tg?.initDataUnsafe?.user?.id || null;
+    }
+
+    getChatId() {
+        // В Mini App chat_id может быть недоступен напрямую
+        // Но мы можем получить user_id
+        return this.getUserId();
     }
 
     getUserName() {
@@ -73,6 +95,62 @@ class TelegramIntegration {
 
     isAvailable() {
         return !!this.tg;
+    }
+
+    // Отправка данных на сервер
+    async sendToServer(url, data) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...data,
+                    initData: this.initData,
+                    userId: this.getUserId()
+                })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Send to server error:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Скачивание файла через Telegram
+    downloadFile(content, filename) {
+        // Создаем blob и скачиваем
+        const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        // Используем Telegram API для открытия ссылки
+        if (this.tg) {
+            // Показываем инструкцию
+            this.showPopup(
+                '📥 Скачивание файла',
+                'Нажмите кнопку ниже, чтобы скачать файл. Затем отправьте его в чат вручную.',
+                [
+                    { type: 'cancel', text: 'Отмена' },
+                    { type: 'ok', text: 'Скачать' }
+                ],
+                (buttonId) => {
+                    if (buttonId === 'ok') {
+                        // Открываем ссылку на скачивание
+                        this.tg.openLink(url);
+                    }
+                }
+            );
+        } else {
+            // Обычное скачивание для браузера
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
     }
 }
 
